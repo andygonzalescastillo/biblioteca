@@ -1,0 +1,53 @@
+# --- IDEs and Editors ---
+.idea/
+**/.idea/
+.vscode/
+**/.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+.springBeans
+.sts4-cache
+.factorypath
+.apt_generated
+
+# --- Operating System Files ---
+.DS_Store
+Thumbs.db
+
+# --- Dependency Directories ---
+node_modules/
+**/node_modules/
+
+# --- Build Outputs ---
+target/
+**/target/
+dist/
+**/dist/
+dist-ssr/
+**/dist-ssr/
+build/
+**/build/
+
+# --- Environment and Secrets ---
+.env
+.env*.local
+*.pem
+*.key
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# --- Application / Upload Files ---
+uploads/
+**/uploads/
+backend/uploads/
+
+# --- Maven Wrapper Jar ---
+.mvn/wrapper/maven-wrapper.jar
+**/maven-wrapper.jar

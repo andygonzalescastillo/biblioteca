@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{portal/layout/main :: page('Carrito', ~{::main})}">
+<main class="flex flex-col gap-8">
+
+  <div id="carrito-contenido-dinamico" th:fragment="contenido" class="flex flex-col gap-8 w-full">
+    <section aria-labelledby="titulo-carrito">
+      <header class="flex flex-row justify-between items-end flex-wrap gap-4 mb-4">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.22em] text-indigo-600">Preparar préstamo</p>
+          <h1 id="titulo-carrito" class="mt-2 text-4xl font-bold text-stone-950 sm:text-5xl">Tu carrito</h1>
+          <p class="mt-3 max-w-2xl text-stone-500">Revisa los libros elegidos y confirma todo en un solo préstamo. Cada libro descuenta una unidad de stock.</p>
+        </div>
+        <a th:href="@{/portal/catalogo}"
+           class="inline-flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2 text-sm font-bold text-stone-700 transition hover:border-indigo-600/30 hover:bg-indigo-600/10 hover:text-indigo-700">
+          Seguir buscando
+        </a>
+      </header>
+    </section>
+
+    <!-- Carrito vacío -->
+    <section th:if="${librosCarrito.empty}"
+             aria-label="Carrito vacío"
+             class="rounded-2xl border border-stone-200 bg-white p-10 text-center shadow-sm sm:p-16">
+      <div class="mx-auto mb-4 flex w-fit items-center justify-center rounded-2xl border border-stone-200 bg-stone-100 p-4" aria-hidden="true">
+        <i data-lucide="shopping-cart" class="h-9 w-9 text-stone-500"></i>
+      </div>
+      <h2 class="text-2xl font-bold text-stone-950">Tu carrito está vacío</h2>
+      <p class="mt-2 text-sm text-stone-500 max-w-sm mx-auto">Agrega libros desde el catálogo para registrar el préstamo completo al final.</p>
+      <div class="mx-auto mt-6 grid max-w-2xl gap-3 text-left sm:grid-cols-3">
+        <div class="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+          <p class="text-[11px] font-bold uppercase tracking-wider text-stone-500">Duración</p>
+          <p class="mt-1 text-sm font-bold text-stone-950">
+            <span th:text="${diasPrestamoMinimo}">1</span>-<span th:text="${diasPrestamoMaximo}">30</span> días
+          </p>
+        </div>
+        <div class="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+          <p class="text-[11px] font-bold uppercase tracking-wider text-stone-500">Por libro</p>
+          <p class="mt-1 text-sm font-bold text-stone-950" th:text="${cantidadReservaMaxima} + ' unidades'">2 unidades</p>
+        </div>
+        <div class="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+          <p class="text-[11px] font-bold uppercase tracking-wider text-stone-500">Activos</p>
+          <p class="mt-1 text-sm font-bold text-stone-950" th:text="${maxLibrosPrestadosConcurrentes} + ' libros'">5 libros</p>
+        </div>
+      </div>
+      <a th:href="@{/portal/catalogo}"
+         class="inline-flex items-center justify-center gap-2 rounded-xl bg-stone-950 px-5 py-3 text-sm font-bold text-white mt-6 transition hover:bg-stone-800">
+        Explorar catálogo
+      </a>
+    </section>
+
+    <!-- Carrito con libros -->
+    <section th:if="${!librosCarrito.empty}"
+             aria-label="Libros en el carrito"
+             class="grid gap-6 lg:grid-cols-[1fr_360px]">
+
+      <!-- Lista de libros -->
+      <div class="flex flex-col gap-4" role="list" aria-label="Libros seleccionados">
+        <article th:each="libro : ${librosCarrito}"
+                 th:data-libro-id="${libro.id}"
+                 role="listitem"
+                 class="grid gap-4 rounded-3xl border border-stone-200 bg-white p-4 shadow-sm sm:grid-cols-[96px_1fr_auto] sm:items-center hover:border-indigo-600/20 transition-all duration-300">
+
+          <a th:href="@{/portal/libros/{id}(id=${libro.id})}"
+             class="block shrink-0 group">
+            <div class="w-20 overflow-hidden rounded-xl border border-stone-200 bg-stone-100 shadow-sm transition-all duration-300 group-hover:scale-105 group-hover:shadow-md group-hover:border-indigo-600/30 relative" style="height: 7.5rem;">
+              <img th:if="${libro.portada != null}"
+                   th:src="${libro.portada.urlAlmacenamiento}"
+                   th:alt="${libro.titulo}"
+                   class="absolute inset-0 w-full h-full object-cover">
+              <div th:if="${libro.portada == null}"
+                   class="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-b from-stone-100 to-stone-200 text-stone-400"
+                   aria-hidden="true">
+                <i data-lucide="book-open" class="h-8 w-8 text-stone-300"></i>
+              </div>
+            </div>
+          </a>
+
+          <!-- Información del libro -->
+          <div class="min-w-0">
+            <p class="text-xs font-bold uppercase tracking-wider text-indigo-600" th:text="${libro.categoria.nombre}">Categoría</p>
+            <h2 class="mt-1 text-base font-bold text-stone-950 truncate" th:text="${libro.titulo}">Título</h2>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              <span th:if="${libro.autores.empty}"
+                    class="rounded-full bg-stone-200 px-2.5 py-0.5 text-[11px] font-bold text-stone-500">Sin autor</span>
+              <span th:each="autor : ${libro.autores}"
+                    th:text="${autor.nombre}"
+                    class="rounded-full border border-stone-200 bg-white px-2.5 py-0.5 text-[11px] font-bold text-stone-950">Autor</span>
+            </div>
+            <p class="mt-1.5 text-xs text-stone-500" th:text="'ISBN ' + ${libro.isbn}">ISBN</p>
+          </div>
+
+          <div class="flex items-center justify-between gap-4 sm:flex-col sm:items-end w-full sm:w-auto">
+            <div class="flex flex-row items-center gap-3">
+              <span class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-600/10 text-emerald-700"
+                    th:text="${libro.stock} + ' disponibles'">Stock</span>
+
+              <div class="flex items-center gap-1.5 bg-white border border-stone-200 rounded-xl p-1 shrink-0"
+                   role="group"
+                   aria-label="Cantidad">
+                <form th:action="@{/portal/carrito/libros/{id}/reducir(id=${libro.id})}"
+                      method="post"
+                      class="form-carrito-ajax"
+                      data-action="reducir"
+                      data-context="carrito">
+                  <button type="submit"
+                          th:disabled="${(cantidadesPorLibro[libro.id] ?: 0) <= 1}"
+                          aria-label="Reducir cantidad"
+                          class="h-7 w-7 rounded-lg border border-stone-200 font-bold text-stone-950 flex items-center justify-center hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none transition text-xs">
+                    -
+                  </button>
+                </form>
+
+                <output class="text-xs font-bold text-stone-950 w-5 text-center"
+                        th:text="${cantidadesPorLibro[libro.id] ?: 0}">1</output>
+
+                <form th:action="@{/portal/carrito/libros/{id}(id=${libro.id})}"
+                      method="post"
+                      class="form-carrito-ajax"
+                      data-action="agregar"
+                      data-context="carrito">
+                  <button type="submit"
+                          th:disabled="${(cantidadesPorLibro[libro.id] ?: 0) >= cantidadReservaMaxima || (cantidadesPorLibro[libro.id] ?: 0) >= libro.stock}"
+                          aria-label="Aumentar cantidad"
+                          class="h-7 w-7 rounded-lg border border-stone-200 font-bold text-stone-950 flex items-center justify-center hover:bg-stone-100 disabled:opacity-30 disabled:pointer-events-none transition text-xs">
+                    +
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <form th:action="@{/portal/carrito/libros/{id}/quitar(id=${libro.id})}"
+                  method="post"
+                  class="form-carrito-ajax"
+                  data-action="quitar"
+                  data-context="carrito">
+              <button type="submit"
+                      class="inline-flex items-center justify-center gap-2 rounded-xl border border-rose-600/20 px-3 py-2 text-xs font-bold text-rose-600 transition hover:bg-rose-600/10">
+                Quitar
+              </button>
+            </form>
+          </div>
+        </article>
+      </div>
+
+      <aside aria-label="Resumen del préstamo"
+             class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm h-fit lg:sticky lg:top-28 flex flex-col gap-5">
+
+        <div>
+          <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-indigo-600">Resumen</p>
+          <p class="mt-1 text-xl font-bold text-stone-950">Préstamo listo</p>
+        </div>
+
+        <div class="flex items-center justify-between rounded-2xl bg-stone-50 border border-stone-200 px-4 py-3">
+          <div class="flex items-center gap-2 text-sm text-stone-500">
+            <i data-lucide="shopping-cart" class="h-4 w-4 text-stone-400 shrink-0"></i>
+            <span>Libros en carrito</span>
+          </div>
+          <span id="resumen-cantidad"
+                class="text-sm font-bold text-stone-950"
+                th:text="${carritoIds.size()}">0</span>
+        </div>
+
+        <div class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 flex flex-col gap-2">
+          <div class="flex items-center justify-between text-sm">
+            <div class="flex items-center gap-2 text-stone-500">
+              <i data-lucide="gauge" class="h-4 w-4 text-stone-400 shrink-0"></i>
+              <span>Cupo libre</span>
+            </div>
+            <span id="resumen-cupo-libre"
+                  class="font-bold text-stone-950"
+                  th:data-base-cupo="${cupoPrestamo != null ? cupoPrestamo.cupoDisponible() : cupoDisponiblePrestamo}"
+                  th:data-maximo="${maxLibrosPrestadosConcurrentes}"
+                  th:text="${cupoDisponiblePrestamo}">0</span>
+          </div>
+          <div class="w-full h-1.5 rounded-full bg-stone-200 overflow-hidden">
+            <div id="resumen-cupo-barra"
+                 class="h-full rounded-full transition-all duration-300"
+                 th:style="${'width: ' + (maxLibrosPrestadosConcurrentes > 0 ? (cupoDisponiblePrestamo * 100 / maxLibrosPrestadosConcurrentes) : 0) + '%; background-color: ' + (cupoDisponiblePrestamo <= 0 ? '#ef4444' : (cupoDisponiblePrestamo <= (maxLibrosPrestadosConcurrentes / 3) ? '#f59e0b' : '#10b981'))}">
+            </div>
+          </div>
+          <p class="text-[11px] text-stone-400">
+            <span th:text="${librosEnPosesionCantidad ?: 0}">0</span>
+            de
+            <span th:text="${maxLibrosPrestadosConcurrentes}">10</span>
+            libros activos en uso
+          </p>
+        </div>
+
+        <dl class="flex flex-col gap-3 text-xs text-stone-500 border-t border-stone-200 pt-4">
+          <div class="flex items-center justify-between gap-3">
+            <dt class="flex items-center gap-1.5">
+              <i data-lucide="calendar" class="h-3.5 w-3.5 text-stone-400 shrink-0"></i>
+              Fecha de devolución
+            </dt>
+            <dd id="resumen-fecha-devolucion" class="font-bold text-stone-950 text-right">Cargando...</dd>
+          </div>
+          <div class="flex items-center justify-between gap-3">
+            <dt class="flex items-center gap-1.5">
+              <i data-lucide="layers" class="h-3.5 w-3.5 text-stone-400 shrink-0"></i>
+              Máx. por libro
+            </dt>
+            <dd class="font-bold text-stone-950" th:text="${cantidadReservaMaxima} + ' ud.'">2 ud.</dd>
+          </div>
+          <div class="flex items-center justify-between gap-3">
+            <dt class="flex items-center gap-1.5">
+              <i data-lucide="library" class="h-3.5 w-3.5 text-stone-400 shrink-0"></i>
+              Libros activos máx.
+            </dt>
+            <dd class="font-bold text-stone-950" th:text="${maxLibrosPrestadosConcurrentes}">10</dd>
+          </div>
+        </dl>
+
+        <p class="rounded-2xl border border-stone-200 bg-stone-50 p-3 text-[11px] leading-relaxed text-stone-400">
+          Se registrará un solo préstamo con todos los libros seleccionados. El stock se descuenta al confirmar.
+        </p>
+
+        <form id="form-prestamo" th:action="@{/portal/carrito/confirmar}" method="post" class="flex flex-col gap-3">
+          <label for="diasPrestamo" class="block text-[11px] font-bold uppercase tracking-wider text-indigo-600">
+            Duración del préstamo
+          </label>
+          <div class="flex items-center gap-2">
+            <button type="button"
+                    id="btn-dias-menos"
+                    aria-label="Reducir días"
+                    class="h-11 w-11 rounded-xl border border-stone-200 font-bold text-stone-950 flex items-center justify-center hover:bg-stone-100 transition">
+              -
+            </button>
+            <input id="diasPrestamo"
+                   name="diasPrestamo"
+                   type="number"
+                   th:value="${diasPrestamoDefault}"
+                   th:min="${diasPrestamoMinimo}"
+                   th:max="${diasPrestamoMaximo}"
+                   class="h-11 min-w-0 flex-1 rounded-xl border border-stone-200 bg-stone-50 text-center text-sm font-bold text-stone-950 focus:border-indigo-600">
+            <button type="button"
+                    id="btn-dias-mas"
+                    aria-label="Aumentar días"
+                    class="h-11 w-11 rounded-xl border border-stone-200 font-bold text-stone-950 flex items-center justify-center hover:bg-stone-100 transition">
+              +
+            </button>
+          </div>
+          <p class="text-[11px] text-stone-400">
+            Mínimo <span th:text="${diasPrestamoMinimo}">1</span> día —
+            máximo <span th:text="${diasPrestamoMaximo}">30</span> días.
+          </p>
+
+          <button type="button"
+                  id="btn-abrir-modal-prestamo"
+                  class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-stone-950 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-stone-800">
+            <i data-lucide="check-circle" class="h-4 w-4"></i>
+            Registrar préstamo
+          </button>
+        </form>
+      </aside>
+    </section>
+
+    <div id="modal-confirmar-prestamo"
+         class="hidden fixed inset-0 z-50 flex items-center justify-center bg-stone-950/40 p-4"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="modal-titulo">
+      <div class="w-full max-w-md rounded-3xl border border-stone-200 bg-stone-100 p-6 shadow-lg">
+        <h3 id="modal-titulo" class="text-lg font-bold text-stone-950">Confirmar préstamo</h3>
+        <p class="mt-2 text-sm leading-relaxed text-stone-500">
+          Se registrará un solo préstamo con todos los libros del carrito por
+          <strong id="modal-dias-texto" class="font-bold text-indigo-600">7</strong>
+          día(s) y se descontará el stock correspondiente.
+        </p>
+        <div class="mt-5 flex gap-2">
+          <button type="button"
+                  id="btn-confirmar-prestamo"
+                  class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-stone-950 px-4 py-2 text-sm font-bold text-white hover:bg-stone-800">
+            Confirmar
+          </button>
+          <button type="button"
+                  id="btn-cancelar-modal-prestamo"
+                  class="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-100">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</html>

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{portal/layout/main :: page('Ingresar', ~{::main})}">
+<main class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center min-h-[calc(100vh-220px)] py-4">
+
+  <section class="lg:col-span-7 flex flex-col gap-6 text-left">
+    <div>
+      <span class="inline-flex items-center gap-1.5 rounded-full border border-indigo-600/20 bg-indigo-600/5 px-3.5 py-1 text-xs font-bold text-indigo-600 uppercase tracking-widest">
+        <span class="h-1.5 w-1.5 rounded-full bg-stone-950 animate-pulse"></span>
+        Portal de lectores
+      </span>
+    </div>
+
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-stone-950 leading-[1.1] tracking-tight">
+      Reserva libros y consulta tus
+      <span class="text-indigo-600">préstamos</span>
+      en segundos.
+    </h1>
+
+    <p class="text-stone-500 text-sm sm:text-base leading-relaxed max-w-xl">
+      Explora el catálogo, revisa disponibilidad en tiempo real y conoce las condiciones antes de preparar tu préstamo.
+    </p>
+
+    <div class="grid gap-4 mt-6 sm:grid-cols-2">
+      <div class="rounded-2xl border border-stone-200 bg-white p-5 transition-all duration-300 hover:border-indigo-600/20">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600/10 text-indigo-600">
+          <i data-lucide="calendar-days" class="h-5 w-5"></i>
+        </div>
+        <p class="mt-4 text-2xl font-bold text-stone-950">
+          <span th:text="${diasPrestamoDefault}">7</span>
+        </p>
+        <p class="mt-1 text-xs font-bold uppercase tracking-wider text-stone-500">días sugeridos</p>
+        <p class="mt-2 text-xs text-stone-500">
+          Puedes elegir entre <span class="font-bold text-stone-950" th:text="${diasPrestamoMinimo}">1</span>
+          y <span class="font-bold text-stone-950" th:text="${diasPrestamoMaximo}">30</span> días.
+        </p>
+      </div>
+
+      <div class="rounded-2xl border border-stone-200 bg-white p-5 transition-all duration-300 hover:border-emerald-600/20">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600/10 text-emerald-700">
+          <i data-lucide="copy-plus" class="h-5 w-5"></i>
+        </div>
+        <p class="mt-4 text-2xl font-bold text-stone-950">
+          <span th:text="${cantidadReservaMaxima}">2</span>
+        </p>
+        <p class="mt-1 text-xs font-bold uppercase tracking-wider text-stone-500">unidades por libro</p>
+        <p class="mt-2 text-xs text-stone-500">Límite por cada título dentro del mismo préstamo.</p>
+      </div>
+
+      <div class="rounded-2xl border border-stone-200 bg-white p-5 transition-all duration-300 hover:border-violet-600/20">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600/10 text-violet-500">
+          <i data-lucide="book-marked" class="h-5 w-5"></i>
+        </div>
+        <p class="mt-4 text-2xl font-bold text-stone-950">
+          <span th:text="${maxLibrosPrestadosConcurrentes}">5</span>
+        </p>
+        <p class="mt-1 text-xs font-bold uppercase tracking-wider text-stone-500">libros activos máximo</p>
+        <p class="mt-2 text-xs text-stone-500">Cuenta todos los libros que tienes en préstamo activo.</p>
+      </div>
+
+      <div class="rounded-2xl border border-stone-200 bg-white p-5 transition-all duration-300 hover:border-stone-300">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 text-stone-700">
+          <i data-lucide="mail-check" class="h-5 w-5"></i>
+        </div>
+        <p class="mt-4 text-2xl font-bold text-stone-950">1</p>
+        <p class="mt-1 text-xs font-bold uppercase tracking-wider text-stone-500">correo registrado</p>
+        <p class="mt-2 text-xs text-stone-500">Entras con el email registrado por la biblioteca.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="lg:col-span-5 relative">
+    <div class="rounded-3xl border border-stone-200 bg-white p-8 shadow-sm relative overflow-hidden flex flex-col gap-6">
+      <div class="flex flex-col gap-2">
+        <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600">Acceso lector</p>
+        <h2 class="text-2xl font-bold text-stone-950">Ingresa con tu correo</h2>
+        <p class="text-xs text-stone-500 leading-relaxed">
+          Usa tu correo registrado para acceder al catálogo, revisar tu carrito y consultar tus préstamos.
+        </p>
+      </div>
+
+      <form th:action="@{/portal/login}" method="post" class="flex flex-col gap-5">
+        <div class="flex flex-col gap-2">
+          <label class="text-xs font-bold text-stone-700 uppercase tracking-wider" for="email">
+            Correo electrónico
+          </label>
+          <div class="relative group">
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              th:value="${email}"
+              placeholder="lector@email.com"
+              class="w-full rounded-xl border border-stone-200 bg-stone-50/60 px-4 py-3.5 text-sm text-stone-950 placeholder-stone-400 focus:border-indigo-600 focus:bg-stone-50 focus:outline-none transition-all duration-300 shadow-inner group-hover:border-stone-300">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-stone-950 px-5 py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-stone-800 hover:shadow-md active:scale-[0.98] duration-300 cursor-pointer">
+          Entrar al portal
+          <i data-lucide="arrow-right" class="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:translate-x-1"></i>
+        </button>
+      </form>
+    </div>
+  </section>
+</main>
+</html>

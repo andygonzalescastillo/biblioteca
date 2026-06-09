@@ -1,0 +1,2 @@
+export const OPCIONES_TAMANIO_PAGINA_PRESTAMOS = [6, 12, 18] as const;
+export const TAMANIO_PAGINA_PRESTAMOS_POR_DEFECTO = 6;

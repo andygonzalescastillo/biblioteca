@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: ${HIKARI_MAX_POOL:10}
+      minimum-idle: ${HIKARI_MIN_IDLE:2}
+      idle-timeout: 30000
+      max-lifetime: 600000
+      connection-timeout: 10000
+      keepalive-time: 60000
+
+  docker:
+    compose:
+      enabled: false
+
+  devtools:
+    restart:
+      enabled: false
+
+# Deshabilitar Swagger en producción por seguridad
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

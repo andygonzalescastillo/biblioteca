@@ -1,0 +1,20 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "node ./node_modules/@tailwindcss/cli/dist/index.mjs -i ./src/main/resources/static/css/input.css -o ./src/main/resources/static/css/tailwind.css --minify",
+    "watch:css": "node ./node_modules/@tailwindcss/cli/dist/index.mjs -i ./src/main/resources/static/css/input.css -o ./src/main/resources/static/css/tailwind.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "tailwindcss": "^4.3.0"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.3.0"
+  }
+}

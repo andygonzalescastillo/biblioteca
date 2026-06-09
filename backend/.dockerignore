@@ -1,0 +1,22 @@
+# Ignorar carpetas de dependencias y builds locales
+target/
+node_modules/
+
+# Ignorar IDEs y editores
+.idea/
+.vscode/
+*.iml
+
+# Ignorar archivos locales temporales y subidas
+uploads/
+*.log
+
+# Ignorar Git
+.git
+.gitignore
+.gitattributes
+
+# Ignorar archivos del docker host
+Dockerfile
+docker-compose.yml
+.dockerignore

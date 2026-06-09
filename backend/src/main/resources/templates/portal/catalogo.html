@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{portal/layout/main :: page('Catálogo', ~{::main})}">
+<main class="flex flex-col gap-8">
+  <section class="mb-8">
+    <p class="text-xs font-bold uppercase tracking-[0.22em] text-indigo-600">Explorar libros</p>
+    <h1 class="mt-2 text-4xl font-bold text-stone-950 sm:text-5xl">Catálogo de libros</h1>
+    <p class="mt-3 max-w-2xl text-stone-500">Busca por título o ISBN. Agrega varios libros al carrito y registra un solo préstamo por <span class="font-bold text-stone-950">7 días</span>.</p>
+  </section>
+
+  <form id="form-busqueda" th:action="@{/portal/catalogo}" method="get" class="pb-4">
+    <input type="hidden" name="size" id="input-size" th:value="${size != null ? size : 8}">
+    <div class="grid gap-3 lg:grid-cols-[1fr_240px_240px]">
+      <div class="relative w-full">
+        <input
+          id="input-buscar"
+          name="buscar"
+          type="text"
+          th:value="${buscar}"
+          placeholder="Buscar por título o ISBN..."
+          autofocus
+          class="w-full rounded-2xl border border-stone-200 bg-white/95 py-4 pl-5 pr-12 text-sm text-stone-950 focus:border-indigo-600/30 focus:bg-white">
+        <button
+          id="btn-limpiar"
+          th:classappend="${buscar == null or buscar.isEmpty()} ? 'hidden' : ''"
+          type="button"
+          class="absolute top-1/2 right-5 -translate-y-1/2 text-stone-500 hover:text-stone-950 cursor-pointer transition flex items-center justify-center">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+      <select name="categoriaId" id="select-categoria" class="rounded-2xl border border-stone-200 bg-white/95 p-4 text-sm font-bold text-stone-500 cursor-pointer focus:border-indigo-600/30">
+        <option value="">Todas las categorías</option>
+        <option th:each="categoria : ${categorias}" th:value="${categoria.id}" th:selected="${categoriaId != null and categoriaId == categoria.id}" th:text="${categoria.nombre}">Categoría</option>
+      </select>
+      <select name="autorId" id="select-autor" class="rounded-2xl border border-stone-200 bg-white/95 p-4 text-sm font-bold text-stone-500 cursor-pointer focus:border-indigo-600/30">
+        <option value="">Todos los autores</option>
+        <option th:each="autor : ${autores}" th:value="${autor.id}" th:selected="${autorId != null and autorId == autor.id}" th:text="${autor.nombre}">Autor</option>
+      </select>
+    </div>
+    <button type="submit" class="hidden">Buscar</button>
+  </form>
+
+  <div id="resultados-info" class="hidden"
+       th:data-has-filters="${(buscar != null and !buscar.isEmpty()) or categoriaId != null or autorId != null}"
+       th:data-total="${librosPage.totalElements}">
+  </div>
+
+  <div id="resultados-container">
+    <section th:if="${librosPage.content.empty}" class="rounded-2xl border border-stone-200 bg-white p-16 text-center">
+      <div class="mx-auto w-fit rounded-2xl bg-stone-100 p-4 mb-4 flex items-center justify-center">
+        <i data-lucide="search" class="h-16 w-16 text-stone-500"></i>
+      </div>
+      <p class="text-2xl font-bold text-stone-950">No se encontraron libros</p>
+      <p class="mt-2 text-sm text-stone-500 max-w-sm mx-auto">Intenta con otra palabra clave, revisa la ortografía o explora el catálogo completo.</p>
+      <a th:if="${buscar != null and !buscar.empty}" th:href="@{/portal/catalogo}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-stone-950 px-4 py-2 text-sm font-bold text-white mt-6 transition hover:bg-stone-800">
+        <i data-lucide="x" class="h-5 w-5"></i>
+        Limpiar búsqueda
+      </a>
+    </section>
+
+    <section class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4" th:if="${!librosPage.content.empty}">
+      <article th:each="libro : ${librosPage.content}"
+               th:data-libro-id="${libro.id}"
+               class="group flex flex-col rounded-2xl border border-stone-200 bg-white shadow-md overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-indigo-600/30 hover:shadow-sm">
+        <a th:href="@{/portal/libros/{id}(id=${libro.id})}" class="block w-full">
+          <div class="relative w-full overflow-hidden bg-stone-100" style="padding-bottom: 150%;">
+            <img th:if="${libro.portada != null}"
+                 th:src="${libro.portada.urlAlmacenamiento}"
+                 th:alt="${libro.titulo}"
+                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+            <div th:if="${libro.portada == null}"
+                 class="absolute inset-0 w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-b from-stone-100 to-stone-200 text-stone-400">
+              <i data-lucide="book-open" class="h-14 w-14 text-stone-300"></i>
+              <span class="text-[10px] font-bold uppercase tracking-widest text-stone-400">Sin portada</span>
+            </div>
+          </div>
+        </a>
+        <div class="p-4 flex flex-col flex-1 gap-3">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-indigo-600" th:text="${libro.categoria.nombre}">Categoría</p>
+            <h2 class="mt-1 text-base font-bold text-stone-950 line-clamp-2" th:text="${libro.titulo}">Título</h2>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              <span th:if="${libro.autores.empty}" class="rounded-full bg-stone-200 px-2 py-0.5 text-[11px] font-bold text-stone-500">Sin autor</span>
+              <span th:each="autor : ${libro.autores}" th:text="${autor.nombre}" class="rounded-full border border-stone-200 bg-white px-2 py-0.5 text-[11px] font-bold text-stone-950">Autor</span>
+            </div>
+            <p class="mt-1 text-xs text-stone-500" th:text="'ISBN ' + ${libro.isbn}">ISBN</p>
+          </div>
+          <div class="mt-auto flex items-center justify-between gap-2 pt-1">
+            <span class="text-xs font-bold px-3 py-1 rounded-full"
+                  th:classappend="${libro.stock > 0} ? 'bg-emerald-600/10 text-emerald-700' : 'bg-rose-600/10 text-rose-700'"
+                  th:text="${libro.stock > 0} ? ${libro.stock} + ' disponibles' : 'Agotado'">Stock</span>
+            <a th:href="@{/portal/libros/{id}(id=${libro.id})}" class="text-xs font-bold text-stone-500 hover:text-indigo-600">Ver detalle →</a>
+          </div>
+          <!-- Caso 1: Ya posee el libro en un préstamo activo -->
+          <a th:if="${librosPrestadosIds != null and librosPrestadosIds.contains(libro.id)}"
+             th:href="@{/portal/mis-prestamos}"
+             class="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-indigo-600/20 bg-indigo-600/10 px-4 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-600/20 transition-all duration-300">
+            <i data-lucide="check" class="h-3.5 w-3.5"></i> Ya lo posees
+          </a>
+
+          <!-- Caso 2: El libro ya está en el carrito -->
+          <button th:if="${(librosPrestadosIds == null or not librosPrestadosIds.contains(libro.id)) and carritoIds != null and carritoIds.contains(libro.id)}"
+             type="button"
+             data-open-cart-drawer
+             class="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-indigo-600/30 bg-indigo-600/10 px-4 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-600/20 transition-all duration-300 cursor-pointer">
+            <i data-lucide="shopping-cart" class="h-3.5 w-3.5"></i> En tu carrito
+          </button>
+
+          <!-- Caso 3: Disponible para agregar -->
+          <form th:if="${(librosPrestadosIds == null or not librosPrestadosIds.contains(libro.id)) and (carritoIds == null or not carritoIds.contains(libro.id)) and libro.stock > 0}"
+                th:action="@{/portal/carrito/libros/{id}(id=${libro.id})}" method="post"
+                class="form-carrito-ajax" data-context="catalogo">
+            <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-stone-950 px-4 py-2 text-xs font-bold text-white transition hover:bg-stone-800 cursor-pointer">
+              Agregar al carrito
+            </button>
+          </form>
+
+          <!-- Caso 4: Sin stock -->
+          <button th:if="${(librosPrestadosIds == null or not librosPrestadosIds.contains(libro.id)) and (carritoIds == null or not carritoIds.contains(libro.id)) and libro.stock <= 0}"
+                  disabled
+                  class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-stone-200 px-4 py-2 text-xs font-bold text-stone-500 cursor-not-allowed">
+            Sin stock
+          </button>
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <div class="flex justify-between items-center flex-wrap gap-6 pt-5 mt-2 w-full"
+       id="resultados-pagination"
+       th:classappend="${librosPage.content.empty} ? 'hidden' : ''">
+    <div class="flex items-center gap-3">
+      <span class="text-xs font-bold text-stone-500">Ver:</span>
+      <div class="inline-flex rounded-xl border border-stone-200 bg-white p-1 gap-0.5">
+        <button type="button" data-size="8"
+                th:classappend="${(size == null ? 8 : size) == 8} ? 'bg-stone-950 text-white font-bold' : 'text-stone-500 hover:text-stone-950'"
+                class="rounded-lg px-4 py-2 text-xs font-semibold min-w-[2.5rem] text-center transition btn-size-toggle">8</button>
+        <button type="button" data-size="16"
+                th:classappend="${size == 16} ? 'bg-stone-950 text-white font-bold' : 'text-stone-500 hover:text-stone-950'"
+                class="rounded-lg px-4 py-2 text-xs font-semibold min-w-[2.5rem] text-center transition btn-size-toggle">16</button>
+        <button type="button" data-size="24"
+                th:classappend="${size == 24} ? 'bg-stone-950 text-white font-bold' : 'text-stone-500 hover:text-stone-950'"
+                class="rounded-lg px-4 py-2 text-xs font-semibold min-w-[2.5rem] text-center transition btn-size-toggle">24</button>
+      </div>
+      <span class="text-xs font-bold text-stone-500 bg-stone-50 border border-stone-200 rounded-xl px-3 py-2" 
+            th:text="${librosPage.totalElements} + ' resultados'">0 resultados</span>
+    </div>
+
+    <!-- Paginación en el lado derecho -->
+    <nav class="flex items-center justify-center" th:if="${librosPage.totalPages > 1}">
+      <div class="flex items-center gap-3">
+        <a th:if="${!librosPage.first}"
+           th:href="@{/portal/catalogo(page=${librosPage.number - 1}, size=${librosPage.size}, buscar=${buscar}, categoriaId=${categoriaId}, autorId=${autorId})}"
+           class="inline-flex items-center gap-1 rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-bold text-stone-700 hover:border-indigo-600/30 hover:bg-indigo-600/10 hover:text-indigo-700 transition">
+          <i data-lucide="chevron-left" class="h-4 w-4"></i>
+          Anterior
+        </a>
+        <span th:if="${librosPage.first}" class="inline-flex items-center gap-1 rounded-xl border border-stone-200 px-4 py-2.5 text-sm font-bold text-stone-400 cursor-not-allowed">
+          <i data-lucide="chevron-left" class="h-4 w-4"></i>
+          Anterior
+        </span>
+
+        <span class="text-sm font-semibold text-stone-700 bg-stone-100 px-4 py-2 rounded-lg" th:text="'Página ' + ${librosPage.number + 1} + ' de ' + ${librosPage.totalPages}"></span>
+
+        <a th:if="${!librosPage.last}"
+           th:href="@{/portal/catalogo(page=${librosPage.number + 1}, size=${librosPage.size}, buscar=${buscar}, categoriaId=${categoriaId}, autorId=${autorId})}"
+           class="inline-flex items-center gap-1 rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-bold text-stone-700 hover:border-indigo-600/30 hover:bg-indigo-600/10 hover:text-indigo-700 transition">
+          Siguiente
+          <i data-lucide="chevron-right" class="h-4 w-4"></i>
+        </a>
+        <span th:if="${librosPage.last}" class="inline-flex items-center gap-1 rounded-xl border border-stone-200 px-4 py-2.5 text-sm font-bold text-stone-400 cursor-not-allowed">
+          Siguiente
+          <i data-lucide="chevron-right" class="h-4 w-4"></i>
+        </span>
+      </div>
+    </nav>
+  </div>
+
+
+</main>
+</html>
