@@ -25,3 +25,4 @@ app:
     cloud-name: test-cloud
     api-key: test-key
     api-secret: test-secret
+    folder: biblioteca-test

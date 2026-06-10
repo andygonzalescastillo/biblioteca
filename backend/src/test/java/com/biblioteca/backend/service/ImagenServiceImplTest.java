@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 
+import com.biblioteca.backend.config.AppProperties;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +38,12 @@ class ImagenServiceImplTest {
 
     @Mock
     private Uploader uploader;
+
+    @Mock
+    private AppProperties appProperties;
+
+    @Mock
+    private AppProperties.Cloudinary cloudinaryConfig;
 
     @InjectMocks
     private ImagenServiceImpl imagenService;
@@ -81,6 +88,8 @@ class ImagenServiceImplTest {
         @Test
         void guardarImagen_Exitoso() throws IOException {
             String cloudinaryUrl = "https://res.cloudinary.com/test/image/upload/v1/biblioteca/abc123.jpg";
+            when(appProperties.cloudinary()).thenReturn(cloudinaryConfig);
+            when(cloudinaryConfig.folder()).thenReturn("biblioteca-test");
             when(cloudinary.uploader()).thenReturn(uploader);
             when(uploader.upload(any(byte[].class), anyMap()))
                     .thenReturn(Map.of("secure_url", cloudinaryUrl));

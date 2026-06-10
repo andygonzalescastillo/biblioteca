@@ -11,6 +11,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { toast } from 'sonner';
+import { imagenService } from '@/shared/services/imagenService';
 import { CampoImagen } from '@/components/shared/CampoImagen';
 import { CampoFormulario } from '@/components/shared/CampoFormulario';
 import { CampoSwitchEstado } from '@/components/shared/CampoSwitchEstado';
@@ -46,6 +48,7 @@ const parseFechaLocal = (fecha?: string) => {
 
 const AutorDialogForm = ({ editingAutor, onSave, onCancel, isSaving }: AutorDialogFormProps) => {
   const [previewUrl, setPreviewUrl] = useState(() => obtenerUrlPreviewImagen(editingAutor?.foto));
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
 
@@ -80,17 +83,39 @@ const AutorDialogForm = ({ editingAutor, onSave, onCancel, isSaving }: AutorDial
     }
   }, [editingAutor, reset]);
 
-  const handleImageChange = (imageId: string | null, url: string) => {
-    setValue('fotoId', imageId, { shouldValidate: true });
+  const handleImageChange = (file: File | null, url: string) => {
+    setImageFile(file);
     setPreviewUrl(url);
+    if (!file) {
+      setValue('fotoId', null, { shouldValidate: true });
+    }
   };
 
-  const onSubmit = (data: AutorFormValues) => {
+  const onSubmit = async (data: AutorFormValues) => {
+    let finalFotoId = data.fotoId;
+
+    if (imageFile) {
+      try {
+        setIsUploading(true);
+        const res = await imagenService.subir(imageFile);
+        finalFotoId = res.id;
+      } catch (err: unknown) {
+        const message = err && typeof err === 'object' && 'message' in err
+          ? String((err as { message: string }).message)
+          : 'Error al subir la imagen';
+        toast.error(message);
+        setIsUploading(false);
+        return;
+      } finally {
+        setIsUploading(false);
+      }
+    }
+
     onSave({
       nombre: data.nombre,
       biografia: data.biografia || '',
       fechaNacimiento: data.fechaNacimiento || undefined,
-      fotoId: data.fotoId ?? undefined,
+      fotoId: finalFotoId ?? undefined,
       estado: data.estado,
     });
   };
@@ -103,8 +128,7 @@ const AutorDialogForm = ({ editingAutor, onSave, onCancel, isSaving }: AutorDial
         label="Foto del Autor (JPG, PNG · máx 5 MB)"
         inputId="autor-foto-file"
         placeholder={<UserCircle2 className="h-9 w-9 text-blue-400/50" />}
-        successMessage="Foto de autor cargada correctamente"
-        onUploadingChange={setIsUploading}
+        selectButtonLabel="Seleccionar Foto"
       />
 
       <CampoFormulario label="Nombre" htmlFor="nombre" required error={errors.nombre?.message}>

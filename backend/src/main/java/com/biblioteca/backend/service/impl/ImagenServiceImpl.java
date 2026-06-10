@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import com.biblioteca.backend.config.AppProperties;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 
@@ -36,6 +37,7 @@ public class ImagenServiceImpl implements ImagenService {
 
     private final ImagenRepository imagenRepository;
     private final Cloudinary cloudinary;
+    private final AppProperties appProperties;
 
     @Override
     public Imagen obtenerImagenPorId(UUID id) {
@@ -54,8 +56,9 @@ public class ImagenServiceImpl implements ImagenService {
         String nombreOriginal = archivo.getOriginalFilename();
 
         // Subir los bytes directamente a Cloudinary con transformaciones de tamaño y optimización aplicadas al subir
+        String folder = appProperties.cloudinary().folder();
         Map<?, ?> uploadResult = cloudinary.uploader().upload(archivo.getBytes(), ObjectUtils.asMap(
-                "folder", "biblioteca",
+                "folder", folder,
                 "transformation", "w_400,h_600,c_limit,q_auto,f_auto"
         ));
 

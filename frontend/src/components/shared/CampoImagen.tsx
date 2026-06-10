@@ -1,22 +1,19 @@
-﻿import { useState, type ReactNode } from 'react';
-import { Upload, X, Loader2 } from 'lucide-react';
+import { type ReactNode } from 'react';
+import { Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { imagenService } from '@/shared/services/imagenService';
 import { cn } from '@/lib/utils';
 
 type ImageUploadVariant = 'avatar' | 'cover';
 
 interface CampoImagenProps {
   previewUrl: string;
-  onChange: (imageId: string | null, previewUrl: string) => void;
+  onChange: (file: File | null, previewUrl: string) => void;
   label: string;
   variant?: ImageUploadVariant;
   inputId?: string;
   placeholder?: ReactNode;
-  successMessage?: string;
   selectButtonLabel?: string;
-  onUploadingChange?: (uploading: boolean) => void;
 }
 
 const previewStyles: Record<ImageUploadVariant, string> = {
@@ -31,42 +28,29 @@ export const CampoImagen = ({
   variant = 'avatar',
   inputId = 'image-upload',
   placeholder,
-  successMessage = 'Imagen cargada correctamente',
   selectButtonLabel = 'Seleccionar Foto',
-  onUploadingChange,
 }: CampoImagenProps) => {
-  const [isUploading, setIsUploading] = useState(false);
 
-  const setUploading = (value: boolean) => {
-    setIsUploading(value);
-    onUploadingChange?.(value);
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
       toast.error('Por favor, selecciona un archivo de tipo imagen.');
       return;
     }
-    try {
-      setUploading(true);
-      const res = await imagenService.subir(file);
-      const url = imagenService.obtenerUrl(res.urlAlmacenamiento);
-      onChange(res.id, url);
-      toast.success(successMessage);
-    } catch (err: unknown) {
-      const message = err && typeof err === 'object' && 'message' in err
-        ? String((err as { message: string }).message)
-        : 'Error al subir la imagen';
-      toast.error(message);
-    } finally {
-      setUploading(false);
-      e.target.value = '';
-    }
+
+    const localUrl = URL.createObjectURL(file);
+    onChange(file, localUrl);
+    e.target.value = '';
   };
 
-  const handleRemove = () => onChange(null, '');
+  const handleRemove = () => {
+    // Si la previewUrl es una URL local del objectURL, deberíamos revocarla
+    if (previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    onChange(null, '');
+  };
 
   return (
     <div className="flex items-center gap-5 p-3 border border-dashed border-border/80 rounded-xl bg-muted/10">
@@ -103,24 +87,14 @@ export const CampoImagen = ({
             accept="image/*"
             onChange={handleFileChange}
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            disabled={isUploading}
           />
           <Button
             type="button"
             variant="outline"
             size="sm"
             className="rounded-xl h-8 text-xs font-semibold"
-            disabled={isUploading}
           >
-            {isUploading ? (
-              <>
-                <Loader2 className="h-3 w-3 mr-1 animate-spin" /> Subiendo...
-              </>
-            ) : (
-              <>
-                <Upload className="h-3 w-3 mr-1" /> {selectButtonLabel}
-              </>
-            )}
+            <Upload className="h-3 w-3 mr-1" /> {selectButtonLabel}
           </Button>
         </div>
       </div>

@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { toast } from 'sonner';
+import { imagenService } from '@/shared/services/imagenService';
 import { CampoImagen } from '@/components/shared/CampoImagen';
 import { CampoFormulario } from '@/components/shared/CampoFormulario';
 import { CampoSelect } from '@/components/shared/CampoSelect';
@@ -49,6 +51,7 @@ const LibroDialogForm = ({
   const [previewUrl, setPreviewUrl] = useState(() =>
     obtenerUrlPreviewImagen(editingLibro?.portada),
   );
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const {
@@ -100,21 +103,41 @@ const LibroDialogForm = ({
     }
   }, [editingLibro, reset]);
 
-
-
-  const handleCoverChange = (imageId: string | null, url: string) => {
-    setValue('portadaId', imageId, { shouldValidate: true });
+  const handleCoverChange = (file: File | null, url: string) => {
+    setImageFile(file);
     setPreviewUrl(url);
+    if (!file) {
+      setValue('portadaId', null, { shouldValidate: true });
+    }
   };
 
-  const onSubmit = (data: LibroFormValues) => {
+  const onSubmit = async (data: LibroFormValues) => {
+    let finalPortadaId = data.portadaId;
+
+    if (imageFile) {
+      try {
+        setIsUploading(true);
+        const res = await imagenService.subir(imageFile);
+        finalPortadaId = res.id;
+      } catch (err: unknown) {
+        const message = err && typeof err === 'object' && 'message' in err
+          ? String((err as { message: string }).message)
+          : 'Error al subir la imagen';
+        toast.error(message);
+        setIsUploading(false);
+        return;
+      } finally {
+        setIsUploading(false);
+      }
+    }
+
     onSave({
       titulo: data.titulo,
       isbn: data.isbn,
       stock: data.stock,
       categoriaId: data.categoriaId,
       autoresIds: data.autoresIds,
-      portadaId: data.portadaId ?? undefined,
+      portadaId: finalPortadaId ?? undefined,
       estado: data.estado,
     });
   };
@@ -265,9 +288,7 @@ const LibroDialogForm = ({
         label="Portada del Libro (JPG, PNG · máx 5 MB)"
         inputId="libro-portada-file"
         placeholder={<BookOpen className="h-6 w-6 text-muted-foreground/40" />}
-        successMessage="Portada cargada correctamente"
         selectButtonLabel="Seleccionar Portada"
-        onUploadingChange={setIsUploading}
       />
 
       <CampoSwitchEstado

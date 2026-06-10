@@ -7,6 +7,8 @@ import { usuarioSchema, type UsuarioFormValues } from '../schemas/usuarioSchema'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { imagenService } from '@/shared/services/imagenService';
 import { CampoImagen } from '@/components/shared/CampoImagen';
 import { CampoFormulario } from '@/components/shared/CampoFormulario';
 import { CampoSwitchEstado } from '@/components/shared/CampoSwitchEstado';
@@ -31,6 +33,7 @@ const UsuarioDialogForm = ({ editingUsuario, onSave, onCancel, isSaving }: Usuar
   const [previewUrl, setPreviewUrl] = useState(() =>
     obtenerUrlPreviewImagen(editingUsuario?.foto),
   );
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const {
@@ -63,18 +66,40 @@ const UsuarioDialogForm = ({ editingUsuario, onSave, onCancel, isSaving }: Usuar
     }
   }, [editingUsuario, reset]);
 
-  const handleImageChange = (imageId: string | null, url: string) => {
-    setValue('fotoId', imageId, { shouldValidate: true });
+  const handleImageChange = (file: File | null, url: string) => {
+    setImageFile(file);
     setPreviewUrl(url);
+    if (!file) {
+      setValue('fotoId', null, { shouldValidate: true });
+    }
   };
 
-  const onSubmit = (data: UsuarioFormValues) => {
+  const onSubmit = async (data: UsuarioFormValues) => {
+    let finalFotoId = data.fotoId;
+
+    if (imageFile) {
+      try {
+        setIsUploading(true);
+        const res = await imagenService.subir(imageFile);
+        finalFotoId = res.id;
+      } catch (err: unknown) {
+        const message = err && typeof err === 'object' && 'message' in err
+          ? String((err as { message: string }).message)
+          : 'Error al subir la imagen';
+        toast.error(message);
+        setIsUploading(false);
+        return;
+      } finally {
+        setIsUploading(false);
+      }
+    }
+
     onSave({
       nombre: data.nombre,
       email: data.email,
       telefono: data.telefono ?? '',
       direccion: data.direccion ?? '',
-      fotoId: data.fotoId ?? undefined,
+      fotoId: finalFotoId ?? undefined,
       estado: data.estado,
     });
   };
@@ -87,8 +112,7 @@ const UsuarioDialogForm = ({ editingUsuario, onSave, onCancel, isSaving }: Usuar
         label="Foto de perfil (JPG, PNG · máx 5 MB)"
         inputId="usuario-foto-file"
         placeholder={<UserCircle2 className="h-9 w-9 text-blue-400/50" />}
-        successMessage="Foto de perfil cargada correctamente"
-        onUploadingChange={setIsUploading}
+        selectButtonLabel="Seleccionar Foto"
       />
 
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">

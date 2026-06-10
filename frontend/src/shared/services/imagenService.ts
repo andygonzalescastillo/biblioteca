@@ -1,6 +1,6 @@
-﻿import { api } from '@/core/api/api';
+import { api } from '@/core/api/api';
 import { API_ENDPOINTS } from '@/core/api/apiEndpoints';
-import { API_ORIGIN } from '@/core/api/apiConfig';
+
 import type { ImagenResponse } from '@/shared/types/imagen';
 
 export const imagenService = {
@@ -22,7 +22,6 @@ export const imagenService = {
   },
 
   obtenerUrl: (urlAlmacenamiento?: string) => {
-    if (!urlAlmacenamiento) return '';
-    return `${API_ORIGIN}${urlAlmacenamiento}`;
+    return urlAlmacenamiento ?? '';
   },
 };

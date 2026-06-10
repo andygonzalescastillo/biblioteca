@@ -13,7 +13,8 @@ public record AppProperties(
     public record Cloudinary(
         String cloudName,
         String apiKey,
-        String apiSecret
+        String apiSecret,
+        String folder
     ) {}
 
     public record Cors(
