@@ -7,8 +7,15 @@ import java.util.List;
 public record AppProperties(
     String uploadDir,
     Cors cors,
-    Prestamo prestamo
+    Prestamo prestamo,
+    Cloudinary cloudinary
 ) {
+    public record Cloudinary(
+        String cloudName,
+        String apiKey,
+        String apiSecret
+    ) {}
+
     public record Cors(
         List<String> allowedOrigins
     ) {}

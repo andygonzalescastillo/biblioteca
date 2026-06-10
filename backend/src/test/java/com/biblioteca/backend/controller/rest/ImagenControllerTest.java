@@ -49,8 +49,7 @@ class ImagenControllerTest {
             return new AppProperties(
                 "uploads",
                 new AppProperties.Cors(List.of("http://localhost:3000")),
-                new AppProperties.Prestamo(5, 1, 30, 3, 5)
-            );
+                new AppProperties.Prestamo(5, 1, 30, 3, 5), null);
         }
     }
 

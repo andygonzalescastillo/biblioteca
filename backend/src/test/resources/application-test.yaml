@@ -15,3 +15,13 @@ spring:
 
   flyway:
     enabled: false
+
+  docker:
+    compose:
+      enabled: false
+
+app:
+  cloudinary:
+    cloud-name: test-cloud
+    api-key: test-key
+    api-secret: test-secret

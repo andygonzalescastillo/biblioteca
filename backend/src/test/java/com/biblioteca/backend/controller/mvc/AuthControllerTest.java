@@ -46,8 +46,7 @@ class AuthControllerTest {
             return new AppProperties(
                 "uploads",
                 new AppProperties.Cors(List.of("http://localhost:3000")),
-                new AppProperties.Prestamo(7, 1, 30, 3, 5)
-            );
+                new AppProperties.Prestamo(7, 1, 30, 3, 5), null);
         }
     }
 

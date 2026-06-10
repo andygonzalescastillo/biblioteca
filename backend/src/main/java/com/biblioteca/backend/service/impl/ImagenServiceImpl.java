@@ -6,23 +6,22 @@ import com.biblioteca.backend.repository.ImagenRepository;
 import com.biblioteca.backend.service.ImagenService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import net.coobird.thumbnailator.Thumbnails;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 
 @Service
 @RequiredArgsConstructor
 public class ImagenServiceImpl implements ImagenService {
 
-    private static final Set<String> CONTENT_TYPES_PERMITIDOS = Set.of(
+    private static final Set<String> CONTENT_TYPES_PERMITDOS = Set.of(
             "image/jpeg",
             "image/png",
             "image/webp"
@@ -36,9 +35,7 @@ public class ImagenServiceImpl implements ImagenService {
     );
 
     private final ImagenRepository imagenRepository;
-
-    @Value("${app.upload.dir:${user.dir}/uploads}")
-    private String uploadDir;
+    private final Cloudinary cloudinary;
 
     @Override
     public Imagen obtenerImagenPorId(UUID id) {
@@ -54,29 +51,19 @@ public class ImagenServiceImpl implements ImagenService {
 
         validarTipoImagen(archivo);
 
-        Path directorio = Path.of(uploadDir);
-        Files.createDirectories(directorio);
-
         String nombreOriginal = archivo.getOriginalFilename();
-        
-        
-        String nuevoNombreArchivo = UUID.randomUUID() + ".jpg";
-        Path rutaDestino = directorio.resolve(nuevoNombreArchivo);
 
-        
-        
-        
-        Thumbnails.of(archivo.getInputStream())
-                .size(400, 600)
-                .outputQuality(0.85)
-                .outputFormat("jpg")
-                .toFile(rutaDestino.toFile());
+        // Subir los bytes directamente a Cloudinary con transformaciones de tamaño y optimización aplicadas al subir
+        Map<?, ?> uploadResult = cloudinary.uploader().upload(archivo.getBytes(), ObjectUtils.asMap(
+                "folder", "biblioteca",
+                "transformation", "w_400,h_600,c_limit,q_auto,f_auto"
+        ));
 
-        String urlAcceso = "/uploads/" + nuevoNombreArchivo;
-        
+        String urlAlmacenamiento = (String) uploadResult.get("secure_url");
+
         Imagen imagen = Imagen.builder()
                 .nombreArchivo(nombreOriginal)
-                .urlAlmacenamiento(urlAcceso)
+                .urlAlmacenamiento(urlAlmacenamiento)
                 .build();
 
         return imagenRepository.save(imagen);
@@ -85,15 +72,49 @@ public class ImagenServiceImpl implements ImagenService {
     @Override
     public void eliminarImagen(UUID id) throws IOException {
         Imagen imagen = obtenerImagenPorId(id);
-        String nombreArchivo = imagen.getUrlAlmacenamiento().replace("/uploads/", "");
-        Path rutaArchivo = Path.of(uploadDir).resolve(nombreArchivo);
-        Files.deleteIfExists(rutaArchivo);
+        
+        String url = imagen.getUrlAlmacenamiento();
+        String publicId = extraerPublicId(url);
+        
+        if (publicId != null) {
+            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+        }
+        
         imagenRepository.delete(imagen);
+    }
+
+    private String extraerPublicId(String url) {
+        int uploadIdx = url.indexOf("/upload/");
+        if (uploadIdx == -1) {
+            return null;
+        }
+        
+        String pathAfterUpload = url.substring(uploadIdx + 8);
+        int firstSlashIdx = pathAfterUpload.indexOf('/');
+        if (firstSlashIdx == -1) {
+            return null;
+        }
+        
+        String versionOrPath = pathAfterUpload.substring(0, firstSlashIdx);
+        String publicIdWithExt;
+        
+        if (versionOrPath.matches("v\\d+")) {
+            publicIdWithExt = pathAfterUpload.substring(firstSlashIdx + 1);
+        } else {
+            publicIdWithExt = pathAfterUpload;
+        }
+        
+        int dotIdx = publicIdWithExt.lastIndexOf('.');
+        if (dotIdx == -1) {
+            return publicIdWithExt;
+        }
+        
+        return publicIdWithExt.substring(0, dotIdx);
     }
 
     private void validarTipoImagen(MultipartFile archivo) {
         String contentType = archivo.getContentType();
-        if (contentType == null || !CONTENT_TYPES_PERMITIDOS.contains(contentType.toLowerCase())) {
+        if (contentType == null || !CONTENT_TYPES_PERMITDOS.contains(contentType.toLowerCase())) {
             throw BusinessException.badRequest("INVALID_IMAGE_TYPE", "Solo se permiten imágenes JPG, PNG o WEBP.");
         }
 
@@ -107,3 +128,4 @@ public class ImagenServiceImpl implements ImagenService {
         }
     }
 }
+
