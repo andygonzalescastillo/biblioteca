@@ -39,7 +39,7 @@ jobs:
     - name: Install backend npm dependencies
       run: |
         cd backend
-        npm ci
+        npm install
 
     # 5. Dar permisos de ejecución al wrapper de Maven
     - name: Grant execute permission for mvnw
