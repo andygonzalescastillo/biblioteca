@@ -1,5 +1,7 @@
 # Sistema de Gestión de Biblioteca 📚
 
+[![Java Backend CI](https://github.com/andygonzalescastillo/biblioteca/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/andygonzalescastillo/biblioteca/actions/workflows/backend-ci.yml)
+
 Este es un proyecto integral para la gestión y administración de una biblioteca digital. El sistema cuenta con **dos interfaces principales** para diferentes tipos de usuarios:
 
 1. **Portal del Lector (Web MVC)**: Un portal web público desarrollado en el backend con Spring Boot MVC (Thymeleaf) que permite a los lectores buscar libros, gestionar su carrito y solicitar reservas y préstamos.
