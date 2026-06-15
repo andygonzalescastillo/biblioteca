@@ -44,28 +44,52 @@ INSERT INTO autor (nombre, biografia, fecha_nacimiento) VALUES
 ('Ernest Hemingway', 'Escritor y periodista estadounidense, uno de los principales novelistas del siglo XX.', '1899-07-21'),
 ('Franz Kafka', 'Escritor bohemio en lengua alemana, cuya obra es una de las más influyentes de la literatura universal.', '1883-07-03');
 
+-- Insertar Imágenes de Libros
+INSERT INTO imagen (id, nombre_archivo, url_almacenamiento) VALUES
+('5c1eb4a6-7782-45bb-b3b4-4b533d1c1a2e', 'cien-anios-de-soledad.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552448/biblioteca/x6c5p13shwb1j8n8h2ky.jpg'),
+('a78f3de1-6202-47ef-80f0-c6d9a11db091', 'el-senor-de-los-anillos.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552459/biblioteca/abrmmxpf2wzdmzafop06.jpg'),
+('a21b369c-2bdf-4a6c-9c71-3323c21a4f02', 'effective-java.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552467/biblioteca/a53djqeii22gvkjdrkii.jpg'),
+('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'it.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552474/biblioteca/ktseuxkvpbfer5ntxj4d.jpg'),
+('9c8b0512-23f4-41d8-bd2f-f4f014e2c91b', 'sapiens.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552481/biblioteca/nkzg4uxnrmnytwyw4pny.jpg'),
+('b1e8e45f-c5b6-4bdf-87cc-4bf238f4d92d', 'clean-code.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552492/biblioteca/bqlbpgkw42bpxtumur1k.jpg'),
+('7f9b0c61-3d2f-410a-ba92-d6a0f4a86f91', 'asesinato-orient-express.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552507/biblioteca/lwxdprn1o0lolq4pe7yi.jpg'),
+('bd1e285d-8b01-447a-986c-48c9df4a321b', 'la-ciudad-y-los-perros.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552519/biblioteca/agwxlvmwwzprqrppr9xw.jpg'),
+('4c2b9f1d-78de-4c01-aefc-34c9df4a3e21', 'cosmos.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552527/biblioteca/lxewq9l0jam9okpfnpcp.jpg'),
+('1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d', 'asi-hablo-zaratustra.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552539/biblioteca/b7fvg1ew3garwdzr6o1r.jpg'),
+('2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e', 'el-hobbit.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552545/biblioteca/kmcefpa5ca8dztfg7hi4.jpg'),
+('3c4d5e6f-7a8b-4c9d-0e1f-2a3b4c5d6e7f', 'el-resplandor.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552553/biblioteca/oakwh5cypht9xnewnlon.jpg'),
+('4d5e6f7a-8b9c-4d0e-1f2a-3b4c5d6e7f8a', 'orgullo-y-prejuicio.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552559/biblioteca/upikvapolcsxet6bk6hl.jpg'),
+('5d6e7f8a-9b0c-4e1f-2a3b-4c5d6e7f8a9b', 'fundacion.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552568/biblioteca/vyi4riwudk6omp4wqyud.jpg'),
+('6e7f8a9b-0c1d-4f2a-3b4c-5d6e7f8a9b0c', 'al-faro.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552576/biblioteca/w556vxsj16dqt6aarpcn.jpg'),
+('7f8a9b0c-1d2e-4a3b-4c5d-6e7f8a9b0c1d', 'el-gato-negro.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552583/biblioteca/jgr93ymminbcj7yovupt.jpg'),
+('8a9b0c1d-2e3f-4b4c-5d6e-7f8a9b0c1d2e', 'el-extranjero.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552590/biblioteca/aqi3sq5kgallnrh3ltqi.jpg'),
+('9b0c1d2e-3f4a-4c5d-6e7f-8a9b0c1d2e3f', 'la-llamada-de-cthulhu.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552602/biblioteca/ta8et486xell8xmiuy2w.jpg'),
+('a0b1c2d3-e4f5-4d6e-7f8a-9b0c1d2e3f4a', 'estudio-en-escarlata.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552614/biblioteca/hq2iumxowca6txfnrx3r.jpg'),
+('b1c2d3e4-f5a6-4e7f-8a9b-0c1d2e3f4a5b', 'veinte-mil-leguas.webp', 'https://res.cloudinary.com/dprdvqyec/image/upload/v1781552625/biblioteca/ykoe5ol6gmbs7urbdg49.jpg');
+
 -- Insertar Libros
-INSERT INTO libro (titulo, isbn, stock, categoria_id) VALUES
-('Cien años de soledad', '978-0307474728', 10, 1),
-('El Señor de los Anillos', '978-8445071755', 5, 4),
-('Effective Java', '978-0134685991', 8, 3),
-('IT', '978-1501142970', 4, 7),
-('Sapiens: De animales a dioses', '978-8499926223', 12, 5),
-('Clean Code', '978-0132350884', 15, 3),
-('Asesinato en el Orient Express', '978-8467035544', 6, 7),
-('La ciudad y los perros', '978-8420471839', 8, 1),
-('Cosmos', '978-8408061250', 7, 10),
-('Así habló Zaratustra', '978-8420633190', 5, 9),
-('El Hobbit', '978-8445071410', 9, 4),
-('El resplandor', '978-8497931038', 6, 7),
-('Orgullo y prejuicio', '978-0141439518', 8, 1),
-('Fundación', '978-0553293357', 12, 2),
-('Al faro', '978-0156030076', 6, 1),
-('El gato negro y otros relatos', '978-8420651262', 15, 7),
-('El extranjero', '978-8420636948', 9, 9),
-('La llamada de Cthulhu', '978-8441319851', 11, 7),
-('Estudio en escarlata', '978-8497930819', 14, 7),
-('Veinte mil leguas de viaje submarino', '978-8420674179', 10, 2);
+INSERT INTO libro (titulo, isbn, stock, categoria_id, portada_imagen_id) VALUES
+('Cien años de soledad', '978-0307474728', 10, 1, '5c1eb4a6-7782-45bb-b3b4-4b533d1c1a2e'),
+('El Señor de los Anillos', '978-8445071755', 5, 4, 'a78f3de1-6202-47ef-80f0-c6d9a11db091'),
+('Effective Java', '978-0134685991', 8, 3, 'a21b369c-2bdf-4a6c-9c71-3323c21a4f02'),
+('IT', '978-1501142970', 4, 7, 'f47ac10b-58cc-4372-a567-0e02b2c3d479'),
+('Sapiens: De animales a dioses', '978-8499926223', 12, 5, '9c8b0512-23f4-41d8-bd2f-f4f014e2c91b'),
+('Clean Code', '978-0132350884', 15, 3, 'b1e8e45f-c5b6-4bdf-87cc-4bf238f4d92d'),
+('Asesinato en el Orient Express', '978-8467035544', 6, 7, '7f9b0c61-3d2f-410a-ba92-d6a0f4a86f91'),
+('La ciudad y los perros', '978-8420471839', 8, 1, 'bd1e285d-8b01-447a-986c-48c9df4a321b'),
+('Cosmos', '978-8408061250', 7, 10, '4c2b9f1d-78de-4c01-aefc-34c9df4a3e21'),
+('Así habló Zaratustra', '978-8420633190', 5, 9, '1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d'),
+('El Hobbit', '978-8445071410', 9, 4, '2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e'),
+('El resplandor', '978-8497931038', 6, 7, '3c4d5e6f-7a8b-4c9d-0e1f-2a3b4c5d6e7f'),
+('Orgullo y prejuicio', '978-0141439518', 8, 1, '4d5e6f7a-8b9c-4d0e-1f2a-3b4c5d6e7f8a'),
+('Fundación', '978-0553293357', 12, 2, '5d6e7f8a-9b0c-4e1f-2a3b-4c5d6e7f8a9b'),
+('Al faro', '978-0156030076', 6, 1, '6e7f8a9b-0c1d-4f2a-3b4c-5d6e7f8a9b0c'),
+('El gato negro y otros relatos', '978-8420651262', 15, 7, '7f8a9b0c-1d2e-4a3b-4c5d-6e7f8a9b0c1d'),
+('El extranjero', '978-8420636948', 9, 9, '8a9b0c1d-2e3f-4b4c-5d6e-7f8a9b0c1d2e'),
+('La llamada de Cthulhu', '978-8441319851', 11, 7, '9b0c1d2e-3f4a-4c5d-6e7f-8a9b0c1d2e3f'),
+('Estudio en escarlata', '978-8497930819', 14, 7, 'a0b1c2d3-e4f5-4d6e-7f8a-9b0c1d2e3f4a'),
+('Veinte mil leguas de viaje submarino', '978-8420674179', 10, 2, 'b1c2d3e4-f5a6-4e7f-8a9b-0c1d2e3f4a5b');
+
 
 -- Asociar Libros con Autores en la tabla intermedia libro_autor
 INSERT INTO libro_autor (libro_id, autor_id) VALUES 
